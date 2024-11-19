@@ -10,6 +10,7 @@
 // @description Auto clicker for slot machine w/ adjustable bet, stopping conditions and a start button
 // @grant       none
 // @match       https://materialize.is/bonus.php?action=slot
+// ==/UserScript==
 
 (function () {
     'use strict';
