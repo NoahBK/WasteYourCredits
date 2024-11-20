@@ -1,16 +1,21 @@
-<p align="center">
-  <img src="https://i.ibb.co/FYWvXFW/Waste-Your-Credits-11-19-2024.png" alt="Waste Your Credits" width="25%" />
-</p>
-<p align="center">
-  <img src="https://i.ibb.co/QfBPX89/x-11-19-2024.png" alt="x-11-19-2024" width="5%" />
-</p>
-<p align="center">
-  <img src="https://i.ibb.co/NsYJHXz/logo.png" alt="Materialize" width="40%" />
-</p>
+<p align="center">   <img src="https://i.ibb.co/0J1bXQ2/pixiz-20-11-2024-17-22-32-ezgif-com-crop.gif" alt="Waste Your Credits" width="25%" /> </p>
 
-**The quick TL;DR of this userscript is that it adds a [button](https://i.imgur.com/KhQjZ3j.png) that manually starts the userscript, checks if the bet amount is 100, auto clicks the [lever](https://materialize.is/static/common/casino/leverUp.png) until you either reload the page or get a jackpot of 10,000 credits or more which will unlock the badge <img src="https://i.ibb.co/GQTcm7t/slotmachine.png" width="20" style="vertical-align: middle; margin-right: 5px;" alt="Slot Machine Badge" title="Awarded for winning 10,000 or more in the slots in one spin"> and stop the userscript.**
+**Quick TL;DR of this userscript:**  
 
-[materialize](https://materialize.is/bonus.php?action=slot) has a slot machine for users to Waste Their Credits™ with a earnable user badge called "Slot Machine Badge", I know, super creative name lol. Anyways, you can manually click the slot machine and run it as many times as needed to obtain the 10,000 or more credits in one spin, which is what unlocks the badge. It took me about [2088](https://i.imgur.com/grNoj0k.png) spins to get the badge, and that was mostly manually. If you stumble upon this Github page either through the tracker itself (from my shameless self promotion) or from Google or whatever, you can automate obtaining this badge (if you have enough credits) through my userscript.
+This userscript adds a button to manually start it. Once activated, it:  
+
+- Checks if the bet is set to max.  
+- Automatically clicks the [lever](https://materialize.is/static/common/casino/leverUp.png) repeatedly until one of the following occurs:  
+  - You reload the page.  
+  - You hit a jackpot of 10,000 credits or more, unlocking the badge:  
+    <img src="https://i.ibb.co/GQTcm7t/slotmachine.png" width="20" style="vertical-align: middle; margin-right: 5px;" alt="Slot Machine Badge" title="Awarded for winning 10,000 or more in the slots in one spin">  
+
+The script stops automatically once the badge is unlocked.  
+
+On **https://www.cathode-ray.tube/bonus.php?action=slot** and **https://www.empornium.sx/bonus.php?action=slot**, the userscript behaves similarly to **https://materialize.is/bonus.php?action=slot**, with these differences:  
+- No badges are available to unlock.  
+- It runs max bets with the same timing interval as on Materialize.  
+- To preserve your credit pool, the script stops automatically after 10 minutes.
 
 # Downloads
 [**Click me!**](https://github.com/NoahBK/WasteYourCredits/raw/refs/heads/main/script.user.js)
