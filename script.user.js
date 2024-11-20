@@ -1,65 +1,85 @@
 // ==UserScript==
-// @name        WasteYourCredits
-// @author      NoahBK (https://github.com/NoahBK)
-// @namespace   https://violentmonkey.github.io/get-it/
-// @version     1.0
-// @homepage    https://github.com/NoahBK
-// @supportURL  https://github.com/NoahBK/WasteYourCredits/issues
-// @downloadURL https://github.com/NoahBK/WasteYourCredits/raw/main/script.user.js
-// @updateURL   https://github.com/NoahBK/WasteYourCredits/raw/main/script.user.js
-// @description Auto clicker for slot machine w/ adjustable bet, stopping conditions and a start button
-// @grant       none
-// @match       https://materialize.is/bonus.php?action=slot
+// @name         WasteYourCredits
+// @author       NoahBK (https://github.com/NoahBK)
+// @namespace    https://violentmonkey.github.io/get-it/
+// @version      1.1
+// @homepage     https://github.com/NoahBK
+// @supportURL   https://github.com/NoahBK/WasteYourCredits/issues
+// @downloadURL  https://github.com/NoahBK/WasteYourCredits/raw/main/script.user.js
+// @updateURL    https://github.com/NoahBK/WasteYourCredits/raw/main/script.user.js
+// @description  Auto clicker for slot machines on supported trackers.
+// @grant        none
+// @match        https://materialize.is/bonus.php?action=slot
+// @match        https://www.cathode-ray.tube/bonus.php?action=slot
+// @match        https://www.empornium.sx/bonus.php?action=slot
 // ==/UserScript==
 
 (function () {
     'use strict';
 
-    // Create clickable image
-    const clickableImage = document.createElement('img');
-    clickableImage.src = 'https://i.ibb.co/FYWvXFW/Waste-Your-Credits-11-19-2024.png'; // Image URL
-    clickableImage.alt = 'Start Auto-Gambling';
-    clickableImage.style.height = '73.3335px'; // 5x the height of "Slot Machine" text size (14.6667px * 5)
-    clickableImage.style.cursor = 'pointer';
-    clickableImage.style.marginLeft = '10px'; // Add spacing from the Slot Machine text
-    clickableImage.style.verticalAlign = 'middle'; // Align with the text
-    clickableImage.style.position = 'relative';
+    const url = window.location.href;
 
-    // Add click event to the image
-    clickableImage.addEventListener('click', function () {
-        startAutoGambling();
-    });
-
-    // Find the Slot Machine header and append the image
-    const slotMachineHeader = document.querySelector('h2');
-    if (slotMachineHeader) {
-        slotMachineHeader.appendChild(clickableImage);
+    if (url.includes('materialize.is')) {
+        setupAutoGambling(
+            'https://i.ibb.co/FYWvXFW/Waste-Your-Credits-11-19-2024.png',
+            () => setupAutoBetting(100), // Bet amount: 100
+            "Spins until you are out of credits or you hit 10,000+ for the Slot Machine Badge"
+        );
+    } else if (url.includes('cathode-ray.tube')) {
+        setupAutoGambling(
+            'https://i.ibb.co/ry88zsV/Waste-Your-Credits-11-20-2024.png',
+            () => setupTimedAutoBetting(5000, 10), // Bet amount: 5000, duration: 10 mins
+            "will spin the max bet amount for 10 minutes or until you are out of credits"
+        );
+    } else if (url.includes('empornium.sx')) {
+        setupAutoGambling(
+            'https://jerking.empornium.ph/images/2024/11/20/Waste-Your-Credits-11-20-2024.png',
+            () => setupTimedAutoBetting(10000, 10), // Bet amount: 10000, duration: 10 mins
+            "will spin the max bet amount for 10 minutes or until you are out of credits"
+        );
     }
 
-    // Function to start auto gambling
-    function startAutoGambling() {
+    // Function to set up the button and attach functionality
+    function setupAutoGambling(imageURL, startFunction, hoverText) {
+        const clickableImage = document.createElement('img');
+        clickableImage.src = imageURL;
+        clickableImage.alt = 'Start Auto-Gambling';
+        clickableImage.title = hoverText;
+        clickableImage.style.height = '73.3335px';
+        clickableImage.style.cursor = 'pointer';
+        clickableImage.style.marginLeft = '10px';
+        clickableImage.style.verticalAlign = 'middle';
+        clickableImage.style.position = 'relative';
+
+        clickableImage.addEventListener('click', startFunction);
+
+        const slotMachineHeader = document.querySelector('h2');
+        if (slotMachineHeader) {
+            slotMachineHeader.appendChild(clickableImage);
+        }
+    }
+
+    // Function to set up auto betting for Materialize
+    function setupAutoBetting(betAmount) {
         const betButton = document.querySelector('input[value="Bet"]');
         const leverButton = document.querySelector('#lever');
         const betAmountField = document.querySelector('#betamount');
 
-        // Click Bet button until bet amount is 100
         function adjustBet() {
-            const betAmount = parseInt(betAmountField.value, 10);
-            if (betAmount !== 100) {
+            const currentBet = parseInt(betAmountField.value, 10);
+            if (currentBet !== betAmount) {
                 betButton.click();
-                setTimeout(adjustBet, 500); // Retry after 500ms
+                setTimeout(adjustBet, 500);
             } else {
                 pullLever();
             }
         }
 
-        // Pull the lever
         function pullLever() {
             leverButton.click();
-            setTimeout(checkResult, 2000); // Check result after 2 seconds
+            setTimeout(checkResult, 2000);
         }
 
-        // Check the result
         function checkResult() {
             const result = document.querySelector('#result');
             const resultText = result ? result.textContent : '';
@@ -67,13 +87,46 @@
 
             if (winAmount >= 10000) {
                 alert('You hit 10000 credits!');
-                return; // Stop the gambling
+                return;
             }
-
-            // Continue if win amount is less than 10000
-            setTimeout(adjustBet, 2000); // Wait 2 seconds before starting the next round
+            setTimeout(adjustBet, 2000);
         }
 
-        adjustBet(); // Start the betting adjustment
+        adjustBet();
+    }
+
+    // Function to set up timed auto betting for Cathode Ray Tube and Empornium
+    function setupTimedAutoBetting(betAmount, durationMinutes) {
+        const startTime = Date.now();
+        const duration = durationMinutes * 60 * 1000; // Convert minutes to milliseconds
+        const betButton = document.querySelector('input[value="Bet"]');
+        const leverButton = document.querySelector('#lever');
+        const betAmountField = document.querySelector('#betamount');
+
+        function adjustBet() {
+            const currentBet = parseInt(betAmountField.value, 10);
+            if (currentBet !== betAmount) {
+                betButton.click();
+                setTimeout(adjustBet, 500);
+            } else {
+                pullLever();
+            }
+        }
+
+        function pullLever() {
+            leverButton.click();
+            setTimeout(checkElapsedTime, 2000);
+        }
+
+        function checkElapsedTime() {
+            const elapsedTime = Date.now() - startTime;
+            if (elapsedTime >= duration) {
+                alert('Auto-gambling session complete!');
+                return;
+            }
+            adjustBet();
+        }
+
+        adjustBet();
     }
 })();
